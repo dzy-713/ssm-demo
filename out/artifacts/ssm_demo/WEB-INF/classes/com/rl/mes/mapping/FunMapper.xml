@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rl.mes.dao.FunMapper">
+    <sql id="baseColumnSql">
+        id, barcode, worker, testTime, drawLineTest, leakWaterTest, upBtnTest, downBtnTest,station,pass
+    </sql>
+
+    <sql id="baseWhereSql">
+        <if test="map!=null">
+            <where>
+                <if test="null != map.id">
+                    AND id = #{map.id}
+                </if>
+                <if test="null != map.barcode">
+                    AND barcode = #{map.barcode}
+                </if>
+                <if test="null != map.worker">
+                    AND worker = #{map.worker}
+                </if>
+                <if test="null != map.testTime">
+                    AND testTime = #{map.testTime}
+                </if>
+                <if test="null != map.drawLineTest">
+                    AND drawLineTest = #{map.drawLineTest}
+                </if>
+                <if test="null != map.leakWaterTest">
+                    AND leakWaterTest = #{map.leakWaterTest}
+                </if>
+                <if test="null != map.upBtnTest">
+                    AND upBtnTest = #{map.upBtnTest}
+                </if>
+                <if test="null != map.downBtnTest">
+                    AND downBtnTest = #{map.downBtnTest}
+                </if>
+                <if test="null != map.station">
+                    AND station = #{map.station}
+                </if>
+                <if test="null != map.pass">
+                    AND pass = #{map.pass}
+                </if>
+            </where>
+        </if>
+    </sql>
+
+    <select id="search" parameterType="java.util.HashMap" resultMap="resultMap">
+        SELECT
+        <include refid="baseColumnSql"/>
+        FROM bus_fun
+        <include refid="baseWhereSql"/>
+    </select>
+
+
+    <select id="findById" resultMap="resultMap">
+        SELECT *
+        from bus_fun
+        WHERE id = #{id}
+    </select>
+
+
+    <insert id="insert">
+        INSERT INTO bus_fun (barcode, worker, testTime, drawLineTest, leakWaterTest, upBtnTest, downBtnTest,station,pass)
+        VALUES (#{barcode}, #{worker}, #{testTime}, #{drawLineTest}, #{leakWaterTest}, #{upBtnTest},
+                #{downBtnTest},#{station},#{pass});
+    </insert>
+
+    <update id="update">
+        UPDATE bus_fun
+        SET
+            barcode       = #{barcode},
+            worker        = #{worker},
+            testTime      = #{testTime},
+            drawLineTest  = #{drawLineTest},
+            leakWaterTest = #{leakWaterTest},
+            upBtnTest     = #{upBtnTest},
+            downBtnTest   = #{downBtnTest},
+            station     = #{station},
+            pass     = #{pass}
+        WHERE id = #{id};
+    </update>
+
+    <delete id="delete">
+        DELETE FROM bus_fun
+        WHERE id = #{id}
+    </delete>
+
+
+    <resultMap id="resultMap" type="com.rl.mes.pojo.Fun">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="barcode" property="barcode" jdbcType="VARCHAR"/>
+        <result column="worker" property="worker" jdbcType="VARCHAR"/>
+        <result column="testTime" property="testTime" jdbcType="TIMESTAMP"/>
+        <result column="drawLineTest" property="drawLineTest" jdbcType="VARCHAR"/>
+        <result column="leakWaterTest" property="leakWaterTest" jdbcType="VARCHAR"/>
+        <result column="upBtnTest" property="upBtnTest" jdbcType="VARCHAR"/>
+        <result column="downBtnTest" property="downBtnTest" jdbcType="VARCHAR"/>
+        <result column="station" property="station" jdbcType="VARCHAR"/>
+        <result column="pass" property="pass" jdbcType="VARCHAR"/>
+    </resultMap>
+
+</mapper>

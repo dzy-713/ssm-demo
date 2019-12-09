@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/mvc
+                        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+    <!--shiro配置-->
+    <bean id="myShiroRealm" class="com.rl.mes.auth.MyRealm"/>
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="myShiroRealm"></property>
+    </bean>
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"
+                  value="org.apache.shiro.SecurityUtils.setSecurityManager" />
+        <property name="arguments" ref="securityManager" />
+    </bean>
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager" />
+        <property name="loginUrl" value="/toLogin" />
+        <property name="successUrl" value="/" />
+        <property name="unauthorizedUrl" value="/unauthorized.do" />
+
+        <property name="filterChainDefinitions">
+            <value>
+                /login = anon <!-- authc 表示需要认证才能访问的页面 -->
+                /logout = anon <!-- authc 表示需要认证才能访问的页面 -->
+                /toLogin = anon <!-- authc 表示需要认证才能访问的页面 -->
+                <!--/user/list.do = authc,perms[document:read]&lt;!&ndash; authc 表示需要认证才能访问的页面 &ndash;&gt;-->
+                /* = authc <!-- authc 表示需要认证才能访问的页面 -->
+                <!--/* = authc  &lt;!&ndash; perms 表示需要该权限才能访问的页面 &ndash;&gt;-->
+            </value>
+        </property>
+    </bean>
+    <!--shiro配置 end-->
+
+</beans>

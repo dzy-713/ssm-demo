@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rl.mes.dao.MenuMapper">
+    <sql id="baseColumnSql">
+        id, _name, _parent_menu_fk, _type, _url, _image, _orderliness, _permission, _level, _end
+    </sql>
+
+    <sql id="baseWhereSql">
+        <if test="map!=null">
+            <where>
+                <if test="null != map.id">
+                    AND id = #{map.id}
+                </if>
+                <if test="null != map.name">
+                    AND _name = #{map.name}
+                </if>
+                <if test="null != map.type">
+                    AND _type = #{map.type}
+                </if>
+                <if test="null != map.url">
+                    AND _url = #{map.url}
+                </if>
+                <if test="null != map.image">
+                    AND _image = #{map.image}
+                </if>
+                <if test="null != map.orderliness">
+                    AND _orderliness = #{map.orderliness}
+                </if>
+                <if test="null != map.permission">
+                    AND _permission = #{map.permission}
+                </if>
+                <if test="null != map.level">
+                    AND _level = #{map.level}
+                </if>
+                <if test="null != map.end">
+                    AND _end = #{map.end}
+                </if>
+            </where>
+        </if>
+    </sql>
+
+    <select id="search" parameterType="java.util.HashMap" resultMap="resultMap">
+        SELECT
+        <include refid="baseColumnSql"/>
+        FROM menu
+        <include refid="baseWhereSql"/>
+        order BY _orderliness
+    </select>
+
+    <select id="findById" resultMap="resultMap">
+        SELECT *
+        from menu
+        WHERE id = #{id}
+    </select>
+
+    <select id="getTopMenu" resultMap="resultMap">
+        select *
+        FROM menu
+        WHERE _parent_menu_fk is NULL
+        ORDER BY _orderliness
+    </select>
+
+    <select id="selectWithParent" resultMap="resultMap">
+        select *
+        FROM menu
+        WHERE _parent_menu_fk = #{parentMenuId}
+        ORDER BY _orderliness
+    </select>
+
+    <insert id="insert">
+        INSERT INTO menu (_name, _type, _url, _image, _parent_menu_fk, _orderliness, _permission, _level, _end)
+        VALUES (#{name}, #{type}, #{url}, #{image}, #{parentMenu.id}, #{orderliness}, #{permission}, #{level}, #{end});
+    </insert>
+
+    <update id="update">
+        UPDATE menu
+        SET
+            _name           = #{name},
+            _type           = #{type},
+            _url            = #{url},
+            _image          = #{image},
+            _parent_menu_fk = #{parentMenu.id},
+            _orderliness    = #{orderliness},
+            _permission     = #{permission},
+            _level          = #{level},
+            _end            = #{end}
+        WHERE id = #{id};
+    </update>
+
+    <delete id="delete">
+        DELETE FROM menu
+        WHERE id = #{id}
+    </delete>
+
+    <select id="getMenuInfo" resultMap="resultMap">
+        select
+            _name,
+            _type,
+            _url,
+            _image,
+            _orderliness
+        FROM menu
+             limit 1
+    </select>
+
+    <select id="getMenuByRole" resultType="com.rl.mes.pojo.ZTreeDto">
+        SELECT
+        menu.id as id,
+        menu._name as name,
+        menu._parent_menu_fk as pId
+        <if test="id!=null">
+            ,t0.checked
+        </if>
+        FROM
+        menu
+        <if test="id!=null">
+            LEFT OUTER JOIN (
+            SELECT
+            oper_role_permission._menu_fk,
+            CASE
+            WHEN oper_role_permission._role_fk = #{id} THEN
+            1
+            ELSE
+            0
+            END AS checked
+            FROM
+            oper_role_permission
+            WHERE oper_role_permission._role_fk = #{id}
+            ) t0 ON t0._menu_fk = menu.id
+        </if>
+    </select>
+
+    <resultMap id="resultMap" type="com.rl.mes.pojo.Menu">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="_name" property="name" jdbcType="VARCHAR"/>
+        <result column="_type" property="type" jdbcType="VARCHAR"/>
+        <result column="_url" property="url" jdbcType="VARCHAR"/>
+        <result column="_image" property="image" jdbcType="VARCHAR"/>
+        <result column="_orderliness" property="orderliness" jdbcType="INTEGER"/>
+        <result column="_permission" property="permission" jdbcType="VARCHAR"/>
+        <result column="_level" property="level" jdbcType="INTEGER"/>
+        <result column="_end" property="end" jdbcType="BIT"/>
+        <!--参照关联映射 这种映射语句必须写在result后面-->
+        <association column="_parent_menu_fk" property="parentMenu"
+                     javaType="com.rl.mes.pojo.Menu" select="findById"/>
+        <!--子集关联映射--><!-- lazy 懒加载-->
+        <collection property="childList" javaType="ArrayList"
+                    column="id" ofType="com.rl.mes.pojo.Menu"
+                    select="selectWithParent"/>
+    </resultMap>
+
+</mapper>

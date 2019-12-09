@@ -1,0 +1,4 @@
+#org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+#  com.hqsoft.orm.hbatis.DataSourceAutoConfiguration,\
+#  com.hqsoft.orm.hbatis.HBatisAutoConfiguration,\
+#  com.hqsoft.orm.hbatis.jackson.JacksonBuilderAutoConfiguration

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rl.mes.dao.UserMapper">
+    <sql id="baseColumnSql">
+        id, _name, _account, _password, _allow_login, _email
+    </sql>
+
+    <sql id="baseWhereSql">
+        <if test="map!=null">
+            <where>
+                <if test="null != map.id">
+                    AND id = #{map.id}
+                </if>
+                <if test="null != map.name">
+                    AND _name = #{map.name}
+                </if>
+                <if test="null != map.account">
+                    AND _account = #{map.account}
+                </if>
+                <if test="null != map.password">
+                    AND _password = #{map.password}
+                </if>
+                <if test="null != map.allowLogin">
+                    AND _allow_login = #{map.allowLogin}
+                </if>
+                <if test="null != map.email">
+                    AND _email = #{map.email}
+                </if>
+            </where>
+        </if>
+    </sql>
+
+    <select id="search" parameterType="java.util.HashMap" resultMap="resultMap">
+        SELECT
+        <include refid="baseColumnSql"/>
+        FROM oper_user
+        <include refid="baseWhereSql"/>
+    </select>
+
+    <select id="searchByLimit" parameterType="java.util.HashMap" resultMap="resultMap">
+        SELECT
+        <include refid="baseColumnSql"/>
+        FROM oper_user
+        <include refid="baseWhereSql"/>
+        Limit #{pageBegin},#{pageSize}
+    </select>
+
+    <select id="findById" resultMap="resultMap">
+        SELECT *
+        from oper_user
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByAccount" resultMap="resultMap">
+        SELECT
+        *
+        from oper_user
+        WHERE
+        _account = #{account}
+        <if test="id!=null">
+            AND id!=#{id}
+        </if>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO oper_user (_name, _account, _password, _allow_login, _email)
+        VALUES (#{name}, #{account}, #{password}, #{allowLogin}, #{email});
+    </insert>
+
+    <update id="update">
+        UPDATE oper_user
+        SET
+            _name        = #{name},
+            _account     = #{account},
+            _password    = #{password},
+            _allow_login = #{allowLogin},
+            _email       = #{email}
+        WHERE id = #{id};
+    </update>
+
+    <delete id="delete">
+        DELETE FROM oper_user
+        WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteUserRole">
+        DELETE FROM oper_role_user
+        WHERE _user_fk = #{user}
+    </delete>
+
+    <update id="saveUserRole">
+        INSERT INTO oper_role_user (_role_fk, _user_fk) VALUES
+        <foreach collection="roleList" item="item" index="index" separator=",">
+            (#{item},#{user})
+        </foreach>
+    </update>
+
+    <select id="getUserPermission" resultType="java.lang.String">
+        SELECT DISTINCT menu._permission
+        FROM
+            oper_user
+            inner JOIN oper_role_user ON oper_role_user._user_fk = oper_user.id
+            inner JOIN oper_role ON oper_role_user._role_fk = oper_role.id
+            inner JOIN oper_role_permission ON oper_role_permission._role_fk = oper_role.id
+            inner JOIN menu ON menu.id = oper_role_permission._menu_fk
+        WHERE menu._permission != '' AND oper_user._account = #{userAccount}
+    </select>
+
+    <resultMap id="resultMap" type="com.rl.mes.pojo.User">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="_name" property="name" jdbcType="VARCHAR"/>
+        <result column="_account" property="account" jdbcType="VARCHAR"/>
+        <result column="_password" property="password" jdbcType="VARCHAR"/>
+        <result column="_allow_login" property="allowLogin" jdbcType="BIT"/>
+        <result column="_email" property="email" jdbcType="VARCHAR"/>
+    </resultMap>
+
+</mapper>

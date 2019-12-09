@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rl.mes.dao.EmailSettingMapper">
+
+    <select id="getEmailSetting" resultMap="resultMap">
+        SELECT
+        *
+        from email_setting LIMIT 1
+    </select>
+
+    <insert id="insert">
+      INSERT INTO email_setting (host, from_email,pass_word)
+      VALUES(#{host},#{fromEmail},#{passWord});
+    </insert>
+
+    <update id="update">
+      UPDATE email_setting
+        SET
+        host = #{host},
+        from_email = #{fromEmail},
+        pass_word = #{passWord}
+    </update>
+
+
+    <resultMap id="resultMap" type="com.rl.mes.pojo.EmailSetting">
+        <result column="host" property="host" jdbcType="VARCHAR"/>
+        <result column="from_email" property="fromEmail" jdbcType="VARCHAR"/>
+        <result column="pass_word" property="passWord" jdbcType="VARCHAR"/>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rl.mes.dao.PickDataMapper">
+
+    <select id="getListByBarcode" resultMap="resultMap">
+        SELECT
+            t0.type,
+            #{barcode}      as barcode,
+            CASE WHEN t1.qty is NULL
+                THEN 0
+            ELSE t1.qty END AS qty
+        FROM (SELECT '烧录校验' as type
+              UNION SELECT '功能测试' as type
+              UNION SELECT '压力测试' as type
+              UNION SELECT '外观检测' as type
+              UNION SELECT '称重检查' as type) t0 LEFT OUTER JOIN
+            (select
+                 '烧录校验'         as type,
+                 barcode,
+                 count(barcode) as qty
+             FROM bus_burn
+             WHERE barcode = #{barcode}
+             GROUP BY barcode
+             UNION select
+                       '功能测试'         as type,
+                       barcode,
+                       count(barcode) as qty
+                   FROM bus_fun
+                   WHERE barcode = #{barcode}
+                   GROUP BY barcode
+             UNION select
+                       '压力测试'         as type,
+                       barcode,
+                       count(barcode) as qty
+                   FROM bus_pressure
+                   WHERE barcode = #{barcode}
+                   GROUP BY barcode
+             UNION select
+                       '外观检测'         as type,
+                       barcode,
+                       count(barcode) as qty
+                   FROM bus_exterior
+                   WHERE barcode = #{barcode}
+                   GROUP BY barcode
+             UNION select
+                       '称重检查'         as type,
+                       barcode,
+                       count(barcode) as qty
+                   FROM bus_weight
+                   WHERE barcode = #{barcode}
+                   GROUP BY barcode
+            ) t1 ON t0.type = t1.type
+    </select>
+
+
+    <resultMap id="resultMap" type="com.rl.mes.pojo.PickData">
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="barcode" property="barcode" jdbcType="VARCHAR"/>
+        <result column="qty" property="qty" jdbcType="INTEGER"/>
+    </resultMap>
+
+</mapper>

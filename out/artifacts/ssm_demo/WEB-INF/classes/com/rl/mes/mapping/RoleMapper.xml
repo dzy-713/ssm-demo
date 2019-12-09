@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rl.mes.dao.RoleMapper">
+    <sql id="baseColumnSql">
+        id, _name, _code
+    </sql>
+
+    <sql id="baseWhereSql">
+        <if test="map!=null">
+            <where>
+                <if test="null != map.id">
+                    AND id = #{map.id}
+                </if>
+                <if test="null != map.name">
+                    AND _name = #{map.name}
+                </if>
+                <if test="null != map.code">
+                    AND _code = #{map.code}
+                </if>
+            </where>
+        </if>
+    </sql>
+
+    <select id="search" parameterType="java.util.HashMap" resultMap="resultMap">
+        SELECT
+        <include refid="baseColumnSql"/>
+        FROM oper_role
+        <include refid="baseWhereSql"/>
+    </select>
+
+
+    <select id="findById" resultMap="resultMap">
+        SELECT *
+        from oper_role
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByCode" resultMap="resultMap">
+        SELECT
+        *
+        from oper_role
+        WHERE
+        _code = #{code}
+        <if test="id!=null">
+            AND id!=#{id}
+        </if>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO oper_role (_name, _code)
+        VALUES (#{name}, #{code});
+    </insert>
+
+    <update id="update">
+        UPDATE oper_role
+        SET
+            _name = #{name},
+            _code = #{code}
+        WHERE id = #{id};
+    </update>
+
+    <delete id="delete">
+        DELETE FROM oper_role
+        WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteRolePermission">
+        DELETE FROM oper_role_permission
+        WHERE _role_fk = #{id}
+    </delete>
+
+    <insert id="saveRolePermission">
+        INSERT INTO oper_role_permission (_role_fk, _menu_fk) VALUES
+        <foreach collection="menuList" item="item" index="index" separator=",">
+            (#{id},#{item})
+        </foreach>
+    </insert>
+
+    <select id="getRoleTree" resultType="com.rl.mes.pojo.ZTreeDto">
+        SELECT
+        oper_role.id AS id,
+        oper_role._name AS name
+        <if test="user!=null">
+            ,t0.checked
+        </if>
+        FROM
+        oper_role
+        <if test="user!=null">
+            LEFT OUTER JOIN (
+            SELECT
+            oper_role_user._role_fk,
+            CASE
+            WHEN oper_role_user._user_fk = #{user} THEN
+            1
+            ELSE
+            0
+            END AS checked
+            FROM
+            oper_role_user
+            WHERE
+            oper_role_user._user_fk = #{user}
+            ) t0 ON t0._role_fk = oper_role.id
+        </if>
+
+
+    </select>
+
+    <resultMap id="resultMap" type="com.rl.mes.pojo.Role">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="_name" property="name" jdbcType="VARCHAR"/>
+        <result column="_code" property="code" jdbcType="VARCHAR"/>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rl.mes.dao.PressureMapper">
+    <sql id="baseColumnSql">
+        id, barcode, worker, testTime, agWeight, agTestResult, agAvgPressure, bgWeight, bgTestResult, bgAvgPressure,
+            cgWeight, cgTestResult, cgAvgPressure,station,pass
+    </sql>
+
+    <sql id="baseWhereSql">
+        <if test="map!=null">
+            <where>
+                <if test="null != map.id">
+                    AND id = #{map.id}
+                </if>
+                <if test="null != map.barcode">
+                    AND barcode = #{map.barcode}
+                </if>
+                <if test="null != map.worker">
+                    AND worker = #{map.worker}
+                </if>
+                <if test="null != map.testTime">
+                    AND testTime = #{map.testTime}
+                </if>
+                <if test="null != map.agWeight">
+                    AND agWeight = #{map.agWeight}
+                </if>
+                <if test="null != map.agTestResult">
+                    AND agTestResult = #{map.agTestResult}
+                </if>
+                <if test="null != map.agAvgPressure">
+                    AND agAvgPressure = #{map.agAvgPressure}
+                </if>
+                <if test="null != map.bgWeight">
+                    AND bgWeight = #{map.bgWeight}
+                </if>
+                <if test="null != map.bgTestResult">
+                    AND bgTestResult = #{map.bgTestResult}
+                </if>
+                <if test="null != map.bgAvgPressure">
+                    AND bgAvgPressure = #{map.bgAvgPressure}
+                </if>
+                <if test="null != map.cgWeight">
+                    AND cgWeight = #{map.cgWeight}
+                </if>
+                <if test="null != map.cgTestResult">
+                    AND cgTestResult = #{map.cgTestResult}
+                </if>
+                <if test="null != map.cgAvgPressure">
+                    AND cgAvgPressure = #{map.cgAvgPressure}
+                </if>
+                <if test="null != map.station">
+                    AND station = #{map.station}
+                </if>
+                <if test="null != map.pass">
+                    AND pass = #{map.pass}
+                </if>
+            </where>
+        </if>
+    </sql>
+
+    <select id="search" parameterType="java.util.HashMap" resultMap="resultMap">
+        SELECT
+        <include refid="baseColumnSql"/>
+        FROM bus_pressure
+        <include refid="baseWhereSql"/>
+    </select>
+
+
+    <select id="findById" resultMap="resultMap">
+        SELECT *
+        from bus_pressure
+        WHERE id = #{id}
+    </select>
+
+
+    <insert id="insert">
+        INSERT INTO bus_pressure (barcode, worker, testTime, agWeight, agTestResult, agAvgPressure, bgWeight, bgTestResult, bgAvgPressure, cgWeight, cgTestResult, cgAvgPressure,station,pass)
+        VALUES (#{barcode}, #{worker}, #{testTime}, #{agWeight}, #{agTestResult}, #{agAvgPressure}, #{bgWeight},
+                            #{bgTestResult}, #{bgAvgPressure}, #{cgWeight}, #{cgTestResult}, #{cgAvgPressure},#{station},#{pass});
+    </insert>
+
+    <update id="update">
+        UPDATE bus_pressure
+        SET
+            barcode       = #{barcode},
+            worker        = #{worker},
+            testTime      = #{testTime},
+            agWeight      = #{agWeight},
+            agTestResult  = #{agTestResult},
+            agAvgPressure = #{agAvgPressure},
+            bgWeight      = #{bgWeight},
+            bgTestResult  = #{bgTestResult},
+            bgAvgPressure = #{bgAvgPressure},
+            cgWeight      = #{cgWeight},
+            cgTestResult  = #{cgTestResult},
+            cgAvgPressure = #{cgAvgPressure},
+            station     = #{station},
+            pass     = #{pass}
+        WHERE id = #{id};
+    </update>
+
+    <delete id="delete">
+        DELETE FROM bus_pressure
+        WHERE id = #{id}
+    </delete>
+
+
+    <resultMap id="resultMap" type="com.rl.mes.pojo.Pressure">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="barcode" property="barcode" jdbcType="VARCHAR"/>
+        <result column="worker" property="worker" jdbcType="VARCHAR"/>
+        <result column="testTime" property="testTime" jdbcType="TIMESTAMP"/>
+        <result column="agWeight" property="agWeight" jdbcType="INTEGER"/>
+        <result column="agTestResult" property="agTestResult" jdbcType="VARCHAR"/>
+        <result column="agAvgPressure" property="agAvgPressure" jdbcType="INTEGER"/>
+        <result column="bgWeight" property="bgWeight" jdbcType="INTEGER"/>
+        <result column="bgTestResult" property="bgTestResult" jdbcType="VARCHAR"/>
+        <result column="bgAvgPressure" property="bgAvgPressure" jdbcType="INTEGER"/>
+        <result column="cgWeight" property="cgWeight" jdbcType="INTEGER"/>
+        <result column="cgTestResult" property="cgTestResult" jdbcType="VARCHAR"/>
+        <result column="cgAvgPressure" property="cgAvgPressure" jdbcType="INTEGER"/>
+        <result column="station" property="station" jdbcType="VARCHAR"/>
+        <result column="pass" property="pass" jdbcType="VARCHAR"/>
+    </resultMap>
+
+</mapper>
