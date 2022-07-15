@@ -33,7 +33,7 @@
         <slf4j.version>1.7.7</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
         <!--swagger-ui版本号-->
-        <version.jackson>2.4.4</version.jackson>
+        <version.jackson>2.12.6.1</version.jackson>
         <swagger.version>2.5.0</swagger.version>
         <!--lombok版本号-->
         <lombok.version>1.16.10</lombok.version>
